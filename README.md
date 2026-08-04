@@ -15,9 +15,9 @@ Every AI task lives on a 2×2 grid:
 
 ## How to play
 
-1. Pick a domain (Food Science, Information Security, Programming, Business, Marketing,
-   Supply Chain, Investing, Consulting — plus four university packs: Researcher, Lecturer,
-   Professional Staff, and Academic).
+1. Pick a domain: Food Science, Information Security, Programming, Business, Marketing,
+   Supply Chain, Investing, Consulting, Executives, Mining, Medical, Science — plus four
+   university packs: Researcher, Lecturer, Professional Staff, and Academic.
 2. All 10 scenarios appear as mini cards. Tap **ⓘ** on a card to read the full scenario.
 3. Drag a card to the quadrant where it belongs — or tap the card, then tap a quadrant.
 4. **✓** = correct: the card locks in; tap the ✓ for the explanation.
