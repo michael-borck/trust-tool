@@ -372,9 +372,15 @@
         resultsOverlay.classList.remove("show");
         gameScreen.style.display = "none";
         startScreen.style.display = "block";
+        if (location.search) history.replaceState(null, "", location.pathname);
         renderDomainGrid(); // refresh best scores
     }
 
     // ---------- Init ----------
     renderDomainGrid();
+
+    // Deep link: ?domain=<id> jumps straight into that pack (e.g. ?domain=food-science)
+    const wanted = new URLSearchParams(location.search).get("domain");
+    const preset = wanted && DOMAINS.find((d) => d.id === wanted);
+    if (preset) startGame(preset);
 })();

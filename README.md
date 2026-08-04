@@ -37,7 +37,12 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-Works as a static site on GitHub Pages as-is.
+Works as a static site on GitHub Pages as-is — live at
+<https://michael-borck.github.io/trust-tool/>.
+
+**Deep links:** append `?domain=<id>` to skip the picker and open a pack directly,
+e.g. [`?domain=food-science`](https://michael-borck.github.io/trust-tool/?domain=food-science).
+The `<id>` is the domain's `id` field in `js/scenarios.js`.
 
 ## Adding a domain or scenarios
 
