@@ -25,6 +25,12 @@
                 A ✓ locks the card in; an ✗ means try again (only your first attempt scores).
                 Tap ⓘ on any card or quadrant for details, and tap ✓/✗ for the explanation.
                 <br>🟢 Light review &nbsp;|&nbsp; 🟡 Verify key claims &nbsp;|&nbsp; 🔴 Human-in-the-loop, non-negotiable.
+                <div class="drag-demo" aria-hidden="true">
+                    <div class="demo-card">Draft a birthday email</div>
+                    <div class="demo-grid"><span></span><span></span><span></span><span></span></div>
+                    <div class="demo-ghost">Draft a birthday email</div>
+                    <div class="demo-check">✓</div>
+                </div>
             </div>
             <div class="domain-heading">Choose your domain</div>
             <div class="domain-grid" id="domainGrid"></div>
@@ -51,57 +57,64 @@
                 <div class="tray">
                     <div class="tray-title"><span>Scenarios</span><span id="trayCount"></span></div>
                     <div class="cards-scroller" id="trayCards"></div>
-                    <div class="tray-hint">Drag a card to a quadrant — or tap the card, then tap the quadrant. Tap ⓘ to read the full scenario.</div>
+                    <div class="tray-hint">Drag a card to a quadrant — or tap the card, then tap the quadrant. Keyboard: Tab to a card, Enter to pick it up, arrow keys to aim, Enter to drop. Tap ⓘ to read the full scenario.</div>
                 </div>
 
                 <div class="grid-area">
                     <div class="grid-wrapper">
-                        <div class="axis-label axis-y">Consequences &rarr; Large (top)</div>
+                        <div class="grid-lines" aria-hidden="true"></div>
+                        <div class="axis-label axis-y" aria-hidden="true">
+                            <span class="axis-text">Consequences: Small &rarr; Large</span>
+                            <span class="axis-track"></span>
+                        </div>
 
-                        <div class="quadrant yellow" data-quadrant="average-large">
+                        <div class="quadrant yellow" data-quadrant="average-large" role="region" aria-label="Verify Load-Bearing Bits — Average precision, Large consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟡 Verify Load-Bearing Bits</div>
-                                <button class="icon-btn" data-quad-info="average-large" title="About this trust level">ⓘ</button>
+                                <button class="icon-btn" data-quad-info="average-large" title="About this trust level" aria-label="About Verify Load-Bearing Bits">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Average + Large</div>
                             <div class="cards" data-cards="average-large"></div>
                         </div>
 
-                        <div class="quadrant red" data-quadrant="precise-large">
+                        <div class="quadrant red" data-quadrant="precise-large" role="region" aria-label="Human-in-the-Loop — Precise output, Large consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🔴 Human-in-the-Loop</div>
-                                <button class="icon-btn" data-quad-info="precise-large" title="About this trust level">ⓘ</button>
+                                <button class="icon-btn" data-quad-info="precise-large" title="About this trust level" aria-label="About Human-in-the-Loop">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Precise + Large</div>
                             <div class="cards" data-cards="precise-large"></div>
                         </div>
 
-                        <div class="quadrant green" data-quadrant="average-small">
+                        <div class="quadrant green" data-quadrant="average-small" role="region" aria-label="Trust with Light Review — Average precision, Small consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟢 Trust with Light Review</div>
-                                <button class="icon-btn" data-quad-info="average-small" title="About this trust level">ⓘ</button>
+                                <button class="icon-btn" data-quad-info="average-small" title="About this trust level" aria-label="About Trust with Light Review">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Average + Small</div>
                             <div class="cards" data-cards="average-small"></div>
                         </div>
 
-                        <div class="quadrant yellow" data-quadrant="precise-small">
+                        <div class="quadrant yellow" data-quadrant="precise-small" role="region" aria-label="Verify Before You Ship — Precise output, Small consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟡 Verify Before You Ship</div>
-                                <button class="icon-btn" data-quad-info="precise-small" title="About this trust level">ⓘ</button>
+                                <button class="icon-btn" data-quad-info="precise-small" title="About this trust level" aria-label="About Verify Before You Ship">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Precise + Small</div>
                             <div class="cards" data-cards="precise-small"></div>
                         </div>
 
                         <div class="axis-label"></div>
-                        <div class="axis-label axis-x">&larr; Average is fine &nbsp;|&nbsp; Must be Precise &rarr;</div>
+                        <div class="axis-label axis-x" aria-hidden="true">
+                            <span class="axis-track"></span>
+                            <span class="axis-text">Precision: Average &rarr; Precise</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="toast" id="toast"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
         <!-- Shared modal -->
         <div class="modal-overlay" id="modalOverlay">

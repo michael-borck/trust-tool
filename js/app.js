@@ -86,6 +86,9 @@
         const el = document.createElement("div");
         el.className = "mini-card";
         el.draggable = true;
+        el.tabIndex = 0;
+        el.setAttribute("role", "button");
+        el.setAttribute("aria-label", item.scenario.title + " — press Enter to pick up, then arrow keys and Enter to place");
 
         const title = document.createElement("span");
         title.className = "card-title";
@@ -95,6 +98,7 @@
         const info = document.createElement("button");
         info.className = "icon-btn";
         info.title = "Read the full scenario";
+        info.setAttribute("aria-label", "Read the full scenario: " + item.scenario.title);
         info.textContent = "ⓘ";
         info.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -103,6 +107,15 @@
         el.appendChild(info);
 
         el.addEventListener("click", () => onCardTap(item));
+
+        el.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            // If a quadrant is already aimed at, let the document handler place the card.
+            if (e.key === "Enter" && selectedItem === item && kbQuadIndex !== -1) return;
+            e.preventDefault();
+            e.stopPropagation();
+            onCardTap(item);
+        });
 
         el.addEventListener("dragstart", (e) => {
             if (item.status === "correct") { e.preventDefault(); return; }
@@ -131,6 +144,7 @@
         badge.className = "badge " + (ok ? "correct" : "wrong");
         badge.textContent = ok ? "✓" : "✗";
         badge.title = ok ? "Why this is right" : "Hint";
+        badge.setAttribute("aria-label", ok ? "Correct — read why" : "Wrong — get a hint");
         badge.addEventListener("click", (e) => {
             e.stopPropagation();
             if (ok) showExplainModal(item);
@@ -159,7 +173,36 @@
             q.classList.toggle("drop-ready", on);
             if (!on) q.classList.remove("drag-over");
         });
+        if (!on) kbQuadIndex = -1;
     }
+
+    // ---------- Keyboard placement ----------
+    // Tab focuses a card, Enter/Space picks it up, arrow keys aim at a
+    // quadrant (grid order: TL, TR, BL, BR), Enter drops it there.
+    const QUAD_ORDER = ["average-large", "precise-large", "average-small", "precise-small"];
+    let kbQuadIndex = -1;
+
+    function highlightKbQuad() {
+        document.querySelectorAll(".quadrant").forEach((q, i) => {
+            q.classList.toggle("drag-over", i === kbQuadIndex);
+        });
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (!selectedItem) return;
+        if (modalOverlay.classList.contains("show") || resultsOverlay.classList.contains("show")) return;
+
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+            e.preventDefault();
+            if (kbQuadIndex === -1) kbQuadIndex = 0;
+            else if (e.key === "ArrowLeft" || e.key === "ArrowRight") kbQuadIndex ^= 1;
+            else kbQuadIndex ^= 2;
+            highlightKbQuad();
+        } else if (e.key === "Enter" && kbQuadIndex !== -1) {
+            e.preventDefault();
+            placeCard(selectedItem, QUAD_ORDER[kbQuadIndex]);
+        }
+    });
 
     // ---------- Quadrant wiring ----------
     document.querySelectorAll(".quadrant").forEach((q) => {
@@ -257,7 +300,14 @@
     document.getElementById("modalClose").addEventListener("click", closeModal);
     modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") { closeModal(); resultsOverlay.classList.remove("show"); }
+        if (e.key !== "Escape") return;
+        closeModal();
+        resultsOverlay.classList.remove("show");
+        if (selectedItem) {
+            selectedItem.el.classList.remove("selected");
+            selectedItem = null;
+            setDropReady(false);
+        }
     });
 
     function showScenarioModal(item) {
