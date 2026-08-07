@@ -5,13 +5,13 @@ human must stay in the loop.
 
 Every AI task lives on a 2×2 grid:
 
-|                       | **Small consequences**         | **Large consequences**            |
+|                       | **Average is fine**            | **Must be Precise**               |
 | --------------------- | ------------------------------ | --------------------------------- |
-| **Must be Precise**   | 🟡 Verify Before You Ship      | 🔴 Human-in-the-Loop              |
-| **Average is fine**   | 🟢 Trust with Light Review     | 🟡 Verify Load-Bearing Bits       |
+| **Large consequences** | 🟡 Verify Load-Bearing Bits    | 🔴 Human-in-the-Loop              |
+| **Small consequences** | 🟢 Trust with Light Review     | 🟡 Verify Before You Ship         |
 
-- **x-axis:** how exact does the output need to be? (Average is fine ↔ Must be Precise)
-- **y-axis:** what's the blast radius if it's wrong? (Small ↔ Large)
+- **x-axis:** how exact does the output need to be? (Average is fine ↔ Must be Precise) — left → right
+- **y-axis:** what's the blast radius if it's wrong? (Small ↔ Large) — bottom → top
 
 ## How to play
 
