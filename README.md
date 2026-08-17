@@ -38,10 +38,11 @@ python3 -m http.server 8000
 ```
 
 Works as a static site on GitHub Pages as-is — live at
-<https://michael-borck.github.io/trust-tool/>.
+<https://trusttool.borck.education/> (the old
+<https://michael-borck.github.io/trust-tool/> URL redirects there).
 
 **Deep links:** append `?domain=<id>` to skip the picker and open a pack directly,
-e.g. [`?domain=food-science`](https://michael-borck.github.io/trust-tool/?domain=food-science).
+e.g. [`?domain=food-science`](https://trusttool.borck.education/?domain=food-science).
 The `<id>` is the domain's `id` field in `js/scenarios.js`.
 
 ## Adding a domain or scenarios
@@ -71,6 +72,13 @@ Edit `js/scenarios.js`. Each domain is:
 Extracted and extended from the [AI + The Human Edge workshop](../curtin/presentations/food-science-ai-workshop)
 (Curtin University), where a single-domain, one-scenario-at-a-time version runs as
 `interactive-tools/trust_tool_game.html`.
+
+## See also
+
+[AI Toys](https://aitoys.borck.education/) — sibling collection of single-file pages that each
+break one AI/ML misconception. The Trust Tool has a card there but stays its own repo: it's
+multi-file, has 16 scenario packs, and remembers best scores, all of which the toys' house
+rules forbid.
 
 ## License
 
