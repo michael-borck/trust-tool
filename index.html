@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Trust Tool — Where Should You Trust AI?</title>
+    <title>The Trust Tool: where should you trust AI?</title>
     <meta name="description" content="Interactive game: drag AI-use scenarios onto the Trust Tool grid. Average vs Precise, Small vs Large consequences. Scenario packs for eight domains.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,7 +23,7 @@
             <div class="rules">
                 <strong>How to play:</strong> Every scenario is a card. For each one, decide how precise
                 the AI's output must be (<strong>Average vs Precise</strong>) and how big the blast radius
-                is if it's wrong (<strong>Small vs Large</strong>), then drag the card to that quadrant —
+                is if it's wrong (<strong>Small vs Large</strong>), then drag the card to that quadrant,
                 or tap the card, then tap a quadrant.
                 A ✓ locks the card in; an ✗ means try again (only your first attempt scores).
                 Tap ⓘ on any card or quadrant for details, and tap ✓/✗ for the explanation.
@@ -57,7 +60,7 @@
                 <div class="tray">
                     <div class="tray-title"><span>Scenarios</span><span id="trayCount"></span></div>
                     <div class="cards-scroller" id="trayCards"></div>
-                    <div class="tray-hint">Drag a card to a quadrant — or tap the card, then tap the quadrant. Keyboard: Tab to a card, Enter to pick it up, arrow keys to aim, Enter to drop. Tap ⓘ to read the full scenario.</div>
+                    <div class="tray-hint">Drag a card to a quadrant, or tap the card, then tap the quadrant. Keyboard: Tab to a card, Enter to pick it up, arrow keys to aim, Enter to drop. Tap ⓘ to read the full scenario.</div>
                 </div>
 
                 <div class="grid-area">
@@ -68,7 +71,7 @@
                             <span class="axis-track"></span>
                         </div>
 
-                        <div class="quadrant yellow" data-quadrant="average-large" role="region" aria-label="Verify Load-Bearing Bits — Average precision, Large consequences">
+                        <div class="quadrant yellow" data-quadrant="average-large" role="region" aria-label="Verify Load-Bearing Bits: Average precision, Large consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟡 Verify Load-Bearing Bits</div>
                                 <button class="icon-btn" data-quad-info="average-large" title="About this trust level" aria-label="About Verify Load-Bearing Bits">ⓘ</button>
@@ -77,7 +80,7 @@
                             <div class="cards" data-cards="average-large"></div>
                         </div>
 
-                        <div class="quadrant red" data-quadrant="precise-large" role="region" aria-label="Human-in-the-Loop — Precise output, Large consequences">
+                        <div class="quadrant red" data-quadrant="precise-large" role="region" aria-label="Human-in-the-Loop: Precise output, Large consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🔴 Human-in-the-Loop</div>
                                 <button class="icon-btn" data-quad-info="precise-large" title="About this trust level" aria-label="About Human-in-the-Loop">ⓘ</button>
@@ -86,7 +89,7 @@
                             <div class="cards" data-cards="precise-large"></div>
                         </div>
 
-                        <div class="quadrant green" data-quadrant="average-small" role="region" aria-label="Trust with Light Review — Average precision, Small consequences">
+                        <div class="quadrant green" data-quadrant="average-small" role="region" aria-label="Trust with Light Review: Average precision, Small consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟢 Trust with Light Review</div>
                                 <button class="icon-btn" data-quad-info="average-small" title="About this trust level" aria-label="About Trust with Light Review">ⓘ</button>
@@ -95,7 +98,7 @@
                             <div class="cards" data-cards="average-small"></div>
                         </div>
 
-                        <div class="quadrant yellow" data-quadrant="precise-small" role="region" aria-label="Verify Before You Ship — Precise output, Small consequences">
+                        <div class="quadrant yellow" data-quadrant="precise-small" role="region" aria-label="Verify Before You Ship: Precise output, Small consequences">
                             <div class="quadrant-header">
                                 <div class="quadrant-title">🟡 Verify Before You Ship</div>
                                 <button class="icon-btn" data-quad-info="precise-small" title="About this trust level" aria-label="About Verify Before You Ship">ⓘ</button>
