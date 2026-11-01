@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Trust Tool: where should you trust AI?</title>
-    <meta name="description" content="Interactive game: drag AI-use scenarios onto the Trust Tool grid. Average vs Precise, Small vs Large consequences. Scenario packs for eight domains.">
+    <meta name="description" content="A short exercise for deciding how much scrutiny an AI output needs. Sort ten scenarios by consequence and precision.">
+    <meta name="theme-color" content="#fafaf6">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,35 +17,20 @@
 
         <div class="header">
             <h1>The Trust Tool</h1>
-            <p class="subtitle">Where does each AI task belong? Drag every card to a quadrant.</p>
+            <p class="subtitle">Where does each AI task belong? Sort ten scenarios into the four quadrants.</p>
         </div>
 
-        <!-- Start screen -->
-        <div id="startScreen">
-            <div class="rules">
-                <strong>How to play:</strong> Every scenario is a card. For each one, decide how precise
-                the AI's output must be (<strong>Average vs Precise</strong>) and how big the blast radius
-                is if it's wrong (<strong>Small vs Large</strong>), then drag the card to that quadrant,
-                or tap the card, then tap a quadrant.
-                A ✓ locks the card in; an ✗ means try again (only your first attempt scores).
-                Tap ⓘ on any card or quadrant for details, and tap ✓/✗ for the explanation.
-                <br>🟢 Light review &nbsp;|&nbsp; 🟡 Verify key claims &nbsp;|&nbsp; 🔴 Human-in-the-loop, non-negotiable.
-                <div class="drag-demo" aria-hidden="true">
-                    <div class="demo-card">Draft a birthday email</div>
-                    <div class="demo-grid"><span></span><span></span><span></span><span></span></div>
-                    <div class="demo-ghost">Draft a birthday email</div>
-                    <div class="demo-check">✓</div>
-                </div>
-            </div>
-            <div class="domain-heading">Choose your domain</div>
-            <div class="domain-grid" id="domainGrid"></div>
+        <div class="intro">
+            <p>Ten scenarios. About five minutes. There are no trick questions.</p>
+            <button class="link-btn" id="howBtn">How it works</button>
         </div>
 
-        <!-- Game screen -->
-        <div id="gameScreen" style="display: none;">
+        <div id="gameScreen">
             <div class="topbar">
-                <button class="back-btn" id="backBtn">&larr; Domains</button>
-                <div class="domain-badge" id="domainBadge"></div>
+                <label class="pack-select">
+                    <span>Scenario pack</span>
+                    <select id="domainSelect" aria-label="Scenario pack"></select>
+                </label>
                 <div class="scoreboard">
                     <div class="score-chip">
                         <div class="value" id="placedCount">0/10</div>
@@ -51,7 +38,7 @@
                     </div>
                     <div class="score-chip score">
                         <div class="value" id="scoreCount">0/10</div>
-                        <div class="label">First-try score</div>
+                        <div class="label">First-pass accuracy</div>
                     </div>
                 </div>
             </div>
@@ -60,7 +47,7 @@
                 <div class="tray">
                     <div class="tray-title"><span>Scenarios</span><span id="trayCount"></span></div>
                     <div class="cards-scroller" id="trayCards"></div>
-                    <div class="tray-hint">Drag a card to a quadrant, or tap the card, then tap the quadrant. Keyboard: Tab to a card, Enter to pick it up, arrow keys to aim, Enter to drop. Tap ⓘ to read the full scenario.</div>
+                    <div class="tray-hint">Drag a card to a quadrant, or tap the card and then the quadrant. Tap the info icon to read the full scenario.</div>
                 </div>
 
                 <div class="grid-area">
@@ -73,7 +60,7 @@
 
                         <div class="quadrant yellow" data-quadrant="average-large" role="region" aria-label="Verify Load-Bearing Bits: Average precision, Large consequences">
                             <div class="quadrant-header">
-                                <div class="quadrant-title">🟡 Verify Load-Bearing Bits</div>
+                                <div class="quadrant-title">Verify Load-Bearing Bits</div>
                                 <button class="icon-btn" data-quad-info="average-large" title="About this trust level" aria-label="About Verify Load-Bearing Bits">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Average + Large</div>
@@ -82,7 +69,7 @@
 
                         <div class="quadrant red" data-quadrant="precise-large" role="region" aria-label="Human-in-the-Loop: Precise output, Large consequences">
                             <div class="quadrant-header">
-                                <div class="quadrant-title">🔴 Human-in-the-Loop</div>
+                                <div class="quadrant-title">Human-in-the-Loop</div>
                                 <button class="icon-btn" data-quad-info="precise-large" title="About this trust level" aria-label="About Human-in-the-Loop">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Precise + Large</div>
@@ -91,7 +78,7 @@
 
                         <div class="quadrant green" data-quadrant="average-small" role="region" aria-label="Trust with Light Review: Average precision, Small consequences">
                             <div class="quadrant-header">
-                                <div class="quadrant-title">🟢 Trust with Light Review</div>
+                                <div class="quadrant-title">Trust with Light Review</div>
                                 <button class="icon-btn" data-quad-info="average-small" title="About this trust level" aria-label="About Trust with Light Review">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Average + Small</div>
@@ -100,7 +87,7 @@
 
                         <div class="quadrant yellow" data-quadrant="precise-small" role="region" aria-label="Verify Before You Ship: Precise output, Small consequences">
                             <div class="quadrant-header">
-                                <div class="quadrant-title">🟡 Verify Before You Ship</div>
+                                <div class="quadrant-title">Verify Before You Ship</div>
                                 <button class="icon-btn" data-quad-info="precise-small" title="About this trust level" aria-label="About Verify Before You Ship">ⓘ</button>
                             </div>
                             <div class="quadrant-sub">Precise + Small</div>
@@ -131,13 +118,14 @@
         <div class="modal-overlay" id="resultsOverlay">
             <div class="modal results-card">
                 <div class="score-big" id="scoreBig"></div>
-                <div class="score-caption">first-try score</div>
+                <div class="score-caption">first-pass accuracy</div>
                 <p class="results-msg" id="scoreText"></p>
                 <div class="recap" id="recap"></div>
                 <div class="btn-row">
-                    <button class="secondary-btn" id="againBtn">Play Again</button>
-                    <button class="primary-btn" id="domainsBtn">Try Another Domain</button>
+                    <a class="primary-btn" href="https://borck.consulting/services">Book a Diagnostic</a>
+                    <button class="secondary-btn" id="anotherBtn">Try another pack</button>
                 </div>
+                <p class="results-link"><a href="https://conversationnotdelegation.com">Read the framework</a></p>
             </div>
         </div>
 

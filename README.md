@@ -7,25 +7,26 @@ Every AI task lives on a 2×2 grid:
 
 |                       | **Average is fine**            | **Must be Precise**               |
 | --------------------- | ------------------------------ | --------------------------------- |
-| **Large consequences** | 🟡 Verify Load-Bearing Bits    | 🔴 Human-in-the-Loop              |
-| **Small consequences** | 🟢 Trust with Light Review     | 🟡 Verify Before You Ship         |
+| **Large consequences** | Verify Load-Bearing Bits | Human-in-the-Loop |
+| **Small consequences** | Trust with Light Review | Verify Before You Ship |
 
-- **x-axis:** how exact does the output need to be? (Average is fine ↔ Must be Precise) — left → right
-- **y-axis:** what's the blast radius if it's wrong? (Small ↔ Large) — bottom → top
+- **x-axis:** how exact does the output need to be? (Average is fine to Must be Precise), left to right
+- **y-axis:** what is the blast radius if it is wrong? (Small to Large), bottom to top
 
-## How to play
+## How to use it
 
-1. Pick a domain: Food Science, Information Security, Programming, Business, Marketing,
-   Supply Chain, Investing, Consulting, Executives, Mining, Medical, Science — plus four
-   university packs: Researcher, Lecturer, Professional Staff, and Academic.
+1. The tool opens in the Business pack. Use the Scenario pack dropdown to switch. Packs
+   cover professional firms, education, and technical or industry work.
 2. All 10 scenarios appear as mini cards. Tap **ⓘ** on a card to read the full scenario.
-3. Drag a card to the quadrant where it belongs — or tap the card, then tap a quadrant.
+3. Drag a card to the quadrant where it belongs, or tap the card and then the quadrant.
 4. **✓** = correct: the card locks in; tap the ✓ for the explanation.
    **✗** = wrong: tap the ✗ for a hint, then move the card to another quadrant.
-5. Only your **first attempt** on each card counts toward your score (X/10). Best scores
-   per domain are remembered locally in your browser.
+5. Only your **first attempt** on each card counts toward the first-pass accuracy (X/10).
 6. Tap **ⓘ** on any quadrant for what that trust level means, with examples and a rule
    of thumb.
+
+The 2x2 is visible on load. The domain picker is a dropdown, not a start screen. That
+keeps the exercise close to the work a partner would actually do.
 
 ## Running it
 

@@ -1,13 +1,10 @@
-// Trust Tool game logic: card tray + drag/tap placement + first-try scoring.
+// Trust Tool: card tray + drag/tap placement + first-pass scoring.
 
 (function () {
     "use strict";
 
     // ---------- DOM ----------
-    const startScreen = document.getElementById("startScreen");
-    const gameScreen = document.getElementById("gameScreen");
-    const domainGrid = document.getElementById("domainGrid");
-    const domainBadge = document.getElementById("domainBadge");
+    const domainSelect = document.getElementById("domainSelect");
     const trayCards = document.getElementById("trayCards");
     const trayCount = document.getElementById("trayCount");
     const placedCount = document.getElementById("placedCount");
@@ -19,30 +16,42 @@
     const resultsOverlay = document.getElementById("resultsOverlay");
 
     // ---------- State ----------
-    let domain = null;        // active domain object
-    let items = [];           // [{scenario, el, status, placedIn, attempts, firstTryCorrect}]
-    let selectedItem = null;  // item picked via tap-to-place
-    let draggedItem = null;   // item being dragged
+    let domain = null;
+    let items = [];
+    let selectedItem = null;
+    let draggedItem = null;
     let toastTimer = null;
 
-    const bestKey = (id) => "trust-tool-best-" + id;
+    // ---------- Pack picker ----------
+    const DOMAIN_GROUPS = [
+        {
+            label: "Professional firms",
+            ids: ["business", "consulting", "executives", "medical", "information-security", "investing", "supply-chain", "marketing"]
+        },
+        {
+            label: "Education",
+            ids: ["researcher", "lecturer", "professional-staff", "academic"]
+        },
+        {
+            label: "Technical and industry",
+            ids: ["programming", "food-science", "mining", "science"]
+        }
+    ];
 
-    // ---------- Domain picker ----------
-    function renderDomainGrid() {
-        domainGrid.innerHTML = "";
-        DOMAINS.forEach((d) => {
-            const btn = document.createElement("button");
-            btn.className = "domain-card";
-            const best = localStorage.getItem(bestKey(d.id));
-            btn.innerHTML =
-                '<span class="emoji">' + d.emoji + "</span>" +
-                '<div class="name">' + d.name + "</div>" +
-                '<div class="desc">' + d.description + "</div>" +
-                (best !== null
-                    ? '<div class="best">★ Best first-try score: ' + best + "/" + d.scenarios.length + "</div>"
-                    : "");
-            btn.addEventListener("click", () => startGame(d));
-            domainGrid.appendChild(btn);
+    function populatePacks() {
+        domainSelect.innerHTML = "";
+        DOMAIN_GROUPS.forEach((group) => {
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = group.label;
+            group.ids.forEach((id) => {
+                const d = DOMAINS.find((x) => x.id === id);
+                if (!d) return;
+                const option = document.createElement("option");
+                option.value = d.id;
+                option.textContent = d.name;
+                optgroup.appendChild(option);
+            });
+            domainSelect.appendChild(optgroup);
         });
     }
 
@@ -51,6 +60,7 @@
         domain = d;
         selectedItem = null;
         draggedItem = null;
+        domainSelect.value = d.id;
 
         const shuffled = d.scenarios.slice();
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -61,13 +71,12 @@
         items = shuffled.map((s) => ({
             scenario: s,
             el: null,
-            status: "tray",       // tray | wrong | correct
+            status: "tray",
             placedIn: null,
             attempts: 0,
             firstTryCorrect: false
         }));
 
-        domainBadge.textContent = d.emoji + " " + d.name;
         document.querySelectorAll(".quadrant .cards").forEach((c) => (c.innerHTML = ""));
         trayCards.innerHTML = "";
         items.forEach((item) => {
@@ -76,8 +85,6 @@
         });
 
         updateCounters();
-        startScreen.style.display = "none";
-        gameScreen.style.display = "block";
         resultsOverlay.classList.remove("show");
     }
 
@@ -110,7 +117,6 @@
 
         el.addEventListener("keydown", (e) => {
             if (e.key !== "Enter" && e.key !== " ") return;
-            // If a quadrant is already aimed at, let the document handler place the card.
             if (e.key === "Enter" && selectedItem === item && kbQuadIndex !== -1) return;
             e.preventDefault();
             e.stopPropagation();
@@ -177,8 +183,6 @@
     }
 
     // ---------- Keyboard placement ----------
-    // Tab focuses a card, Enter/Space picks it up, arrow keys aim at a
-    // quadrant (grid order: TL, TR, BL, BR), Enter drops it there.
     const QUAD_ORDER = ["average-large", "precise-large", "average-small", "precise-small"];
     let kbQuadIndex = -1;
 
@@ -235,7 +239,7 @@
     // ---------- Placement ----------
     function placeCard(item, quadrantKey) {
         if (item.status === "correct") return;
-        if (item.placedIn === quadrantKey) return; // dropped where it already sits
+        if (item.placedIn === quadrantKey) return;
 
         if (selectedItem === item) {
             item.el.classList.remove("selected");
@@ -255,13 +259,13 @@
         setBadge(item);
 
         item.el.classList.remove("shake", "pop");
-        void item.el.offsetWidth; // restart animation
+        void item.el.offsetWidth;
         item.el.classList.add(correct ? "pop" : "shake");
 
         showToast(
             correct
-                ? "✓ Correct" + (item.attempts === 1 ? " — first try!" : ".") + " Tap the ✓ for why."
-                : "✗ Not quite. Tap the ✗ for a hint, then drag it somewhere else.",
+                ? "✓ Correct" + (item.attempts === 1 ? " — first try." : ".") + " Tap the ✓ for why."
+                : "✗ Not quite. Tap the ✗ for a hint, then move it somewhere else.",
             correct
         );
 
@@ -310,19 +314,30 @@
         }
     });
 
+    function showHowItWorks() {
+        openModal(
+            '<div class="modal-kicker">How it works</div>' +
+            "<h3>Place the task, not the tool.</h3>" +
+            "<p>Each scenario is a card. Decide how precise the output must be and how large the consequences are if it is wrong. Drag the card to that quadrant, or tap the card and then the quadrant.</p>" +
+            "<p>A correct placement locks in. A wrong placement gives a hint, and you can move the card again. Only your first attempt counts toward the first-pass accuracy.</p>" +
+            "<p>Tap the info icon on any card or quadrant for the full scenario and the reasoning.</p>" +
+            '<p class="rule-line">Green: light review. Yellow: verify. Red: a person signs off.</p>'
+        );
+    }
+
     function showScenarioModal(item) {
         openModal(
             '<div class="modal-kicker">Scenario</div>' +
             "<h3>" + item.scenario.title + "</h3>" +
             "<p>" + item.scenario.text + "</p>" +
-            '<p class="rule-line">Decide: must the output be Precise or is Average fine? And if it\'s wrong — Small or Large consequences?</p>'
+            '<p class="rule-line">Decide: must the output be precise or is average fine? And if it is wrong, are the consequences small or large?</p>'
         );
     }
 
     function showExplainModal(item) {
         const q = QUADRANTS[item.scenario.answer];
         openModal(
-            '<div class="modal-kicker">Why this is ' + q.emoji + " " + q.name + "</div>" +
+            '<div class="modal-kicker">Why this is ' + q.name + "</div>" +
             "<h3>" + item.scenario.title + "</h3>" +
             "<p>" + item.scenario.text + "</p>" +
             "<p>" + item.scenario.explain + "</p>",
@@ -338,15 +353,15 @@
 
         let hint;
         if (precisionWrong && consequenceWrong) {
-            hint = "Both axes need a rethink. How exact does the output really have to be — and if it's wrong, who or what actually gets hurt?";
+            hint = "Both axes need a rethink. How exact does the output really have to be, and if it is wrong, who or what actually gets hurt?";
         } else if (precisionWrong) {
             hint = answer[0] === "precise"
-                ? "You've judged the blast radius right — but is 'roughly right' genuinely good enough here? Think about whether one wrong digit, name, or clause breaks the task."
-                : "You've judged the blast radius right — but does this output really need to be exact? Ideas, drafts, and framing can be average and still do their job.";
+                ? "You judged the blast radius right, but is roughly right genuinely good enough here? Think about whether one wrong digit, name, or clause breaks the task."
+                : "You judged the blast radius right, but does this output really need to be exact? Ideas, drafts, and framing can be average and still do their job.";
         } else {
             hint = answer[1] === "large"
-                ? "You've judged the precision right — now think bigger about consequences. Who sees this? Could it harm a person, breach a rule, or cost real money?"
-                : "You've judged the precision right — but is the blast radius really that big? If a mistake here is cheap to catch and fix, the consequences are small.";
+                ? "You judged the precision right. Now think bigger about consequences. Who sees this? Could it harm a person, breach a rule, or cost real money?"
+                : "You judged the precision right, but is the blast radius really that big? If a mistake is cheap to catch and fix, the consequences are small.";
         }
 
         openModal(
@@ -354,7 +369,7 @@
             "<h3>" + item.scenario.title + "</h3>" +
             "<p>" + item.scenario.text + "</p>" +
             "<p>" + hint + "</p>" +
-            '<p class="rule-line">Drag the card to a different quadrant to try again. First attempts are what count for your score.</p>'
+            '<p class="rule-line">Move the card to a different quadrant to try again. First attempts are what count for the score.</p>'
         );
     }
 
@@ -362,7 +377,7 @@
         const q = QUADRANTS[key];
         openModal(
             '<div class="modal-kicker">Trust level</div>' +
-            "<h3>" + q.emoji + " " + q.name + "</h3>" +
+            "<h3>" + q.name + "</h3>" +
             "<p><em>" + q.axes + "</em></p>" +
             "<p>" + q.detail.summary + "</p>" +
             "<ul>" + q.detail.examples.map((x) => "<li>" + x + "</li>").join("") + "</ul>" +
@@ -377,19 +392,14 @@
         const score = items.filter((i) => i.firstTryCorrect).length;
         const pct = Math.round((score / total) * 100);
 
-        const prevBest = parseInt(localStorage.getItem(bestKey(domain.id)) || "-1", 10);
-        const isBest = score > prevBest;
-        if (isBest) localStorage.setItem(bestKey(domain.id), String(score));
-
         document.getElementById("scoreBig").textContent = score + " / " + total;
 
         let msg;
-        if (pct === 100) msg = "Perfect. You place tasks like someone who will never be the next Deloitte headline. The grid is instinct now — use it before every AI session.";
-        else if (pct >= 80) msg = "Strong placement instincts. Review the ones you missed below — they're usually the sneaky yellow-quadrant tasks that feel green.";
-        else if (pct >= 60) msg = "Getting there. The most common mistake is treating red-quadrant tasks — safety, regulations, money, anything touching a person — as if they were green.";
-        else msg = "The grid needs practice. Key rule: if a wrong answer could harm a person, breach a regulation, or cost money — it's red, and a human checks it before anything ships.";
-        msg += " Remember: trust is about the task, not the tool.";
-        if (isBest && prevBest >= 0) msg += " 🏆 New best score for this domain!";
+        if (pct === 100) msg = "Perfect. The grid is instinct now. Use it before every AI session.";
+        else if (pct >= 80) msg = "Strong placement instincts. Review the ones you missed below. They are usually the sneaky yellow-quadrant tasks that feel green.";
+        else if (pct >= 60) msg = "Getting there. The most common mistake is treating red-quadrant tasks, such as safety, regulations, money, or anything touching a person, as if they were green.";
+        else msg = "The grid needs practice. Key rule: if a wrong answer could harm a person, breach a regulation, or cost money, it is red, and a human checks it before anything ships.";
+        msg += " Trust is about the task, not the tool.";
         document.getElementById("scoreText").textContent = msg;
 
         const recap = document.getElementById("recap");
@@ -401,7 +411,7 @@
             row.innerHTML =
                 '<span class="mark ' + (item.firstTryCorrect ? "ok" : "miss") + '">' + (item.firstTryCorrect ? "✓" : "✗") + "</span>" +
                 '<span class="r-title">' + item.scenario.title + "</span>" +
-                '<span class="r-quad">' + q.emoji + " " + q.name + "</span>";
+                '<span class="r-quad">' + q.name + "</span>";
             row.style.cursor = "pointer";
             row.title = "Tap for the explanation";
             row.addEventListener("click", () => showExplainModal(item));
@@ -411,26 +421,25 @@
         resultsOverlay.classList.add("show");
     }
 
-    document.getElementById("againBtn").addEventListener("click", () => {
+    // ---------- Event wiring ----------
+    document.getElementById("howBtn").addEventListener("click", showHowItWorks);
+    document.getElementById("anotherBtn").addEventListener("click", () => {
         resultsOverlay.classList.remove("show");
-        startGame(domain);
+        domainSelect.focus();
+        if (typeof domainSelect.showPicker === "function") {
+            try { domainSelect.showPicker(); } catch (e) { /* ignore */ }
+        }
     });
-    document.getElementById("domainsBtn").addEventListener("click", goHome);
-    document.getElementById("backBtn").addEventListener("click", goHome);
-
-    function goHome() {
-        resultsOverlay.classList.remove("show");
-        gameScreen.style.display = "none";
-        startScreen.style.display = "block";
-        if (location.search) history.replaceState(null, "", location.pathname);
-        renderDomainGrid(); // refresh best scores
-    }
+    domainSelect.addEventListener("change", () => {
+        const next = DOMAINS.find((d) => d.id === domainSelect.value);
+        if (next) startGame(next);
+    });
 
     // ---------- Init ----------
-    renderDomainGrid();
+    populatePacks();
 
-    // Deep link: ?domain=<id> jumps straight into that pack (e.g. ?domain=food-science)
     const wanted = new URLSearchParams(location.search).get("domain");
     const preset = wanted && DOMAINS.find((d) => d.id === wanted);
-    if (preset) startGame(preset);
+    const defaultDomain = DOMAINS.find((d) => d.id === "business") || DOMAINS[0];
+    startGame(preset || defaultDomain);
 })();
